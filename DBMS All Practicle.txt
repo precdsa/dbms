@@ -1,0 +1,330 @@
+Practical No:2 DDL,DML
+                                                             
+sudo su;
+mysql;
+
+show databases;
+create database Student;
+use Student;
+
+10)create table student(Rollno int,Name varchar(34),Marks int,primary key(Rollno))
+desc student;
+
+insert into student values(1,'Gaurav Kadam',54);
+insert into student(Rollno,Name,Marks) values(2,'Shubham Kadam',56);
+insert into student(Rollno,Name,Marks) values(3,'Harsh Kadlag',56);
+insert into student(Rollno,Name,Marks) values(3,'Narendra Kadlag',46);
+insert into student(Rollno,Name,Marks) values(4,'Narendra Kadlag',46);
+insert into student(Rollno,Name,Marks) values(5,'shejal Kadlag',106);
+select * from student;
+
+create table account as select Rollno,Name from student;
+9)alter table account add(fees int);
+update account set fees=20 where Rollno=1;
+update account set fees=223 where Rollno=2;
+update account set fees=234 where Rollno=3;
+update account set fees=222 where Rollno=4;
+update account set fees=333 where Rollno=5;
+select * from account;
+
+8)drop table account;
+7)truncate table account;
+
+6)update student set Name='Kajal Kadalg' where Name='shejal Kadlag';
+5)delete from student where Name='Harsh Kadlag';
+4)insert into student values(3,'Ganesh Shelke',89);
+select * from student;
+
+use Student;
+show tables;
+select count(*) from student;
+3)select avg(Marks) from student;
+2)select max(Marks) from student;
+1)select min(Marks) from student;
+
+Practical No:3
+Title:Write at least 10 SQL queries for suitable database application using SQL DML statements.
+ 
+
+
+create table officer(officer_id int ,officer_name varchar(20), address varchar(20));
+insert into officer values(1,'ajit','nandur');
+insert into officer values(1,'ajit','nagar');
+insert into officer values(2,'deepika','lucknow');
+insert into officer values(3,'vimal','arunachal');
+insert into officer values(4,'rahul','lucknow');
+selet*from student;
+create table student(student_id int,student_name varchar(20),course_name varchar(20));
+insert into student values(1,'aryan','java');
+insert into student values(2,'rohini','Hadoop');
+insert into student values(3,'nisha','mongoDB');
+
+select * from officer;
+select * from student;
+select officer.officer_name,officer.address,student.course_name
+    -> from officer
+    -> inner join student
+    -> on officer.officer_id=student.student_id;
+
+
+select officer.officer_name,officer.address,student.course_name from officer left join student on officer.officer_id=student.student_id;
+select officer.officer_name,officer.address,student.course_name from officer right join student on officer.officer_id=student.student_id;
+  
+
+
+                                                Practicle NO 4
+Q) Unnamed PL/SQLcode block: Use of Control structure and Exception handling is mandatory.
+Suggested Problem statement:
+Consider Tables:
+1. Borrower(Roll_no, Name, Date of Issue,Name of Book, Status)
+2. Fine(Roll_no, Date, Amt)
+• Accept Roll_no and Name of Book from user.
+• Check the number of days (from date of issue).
+• If days are between 15 to 30 then fine amount will be Rs 5per day.
+• If no. of days>30, per day fine will be Rs 50 per day and for days less than 30, Rs. 5 per day.
+• After submitting the book, status will change from I to R.
+• If condition of fine is true, then details will be stored into fine table.
+• Also handles the exception by named exception handler or user define exception handler
+
+Queries:
+
+create table Borrow1(rollno int, name varchar(20), DOI DATE, NOB varchar(20), status varchar(20));
+insert into Borrow1 values(1,'anuj',to_date('20220523','yyyymmdd'),'SPOS','I');
+insert into Borrow1 values(2,'Assim',to_date('20210413','yyyymmdd'),'CN','R');
+insert into Borrow1 values(3,'Rahul',to_date('20220822','yyyymmdd'),'DBMS','I');
+insert into Borrow1 values(4,'Pritesh',to_date('20210618','yyyymmdd'),'TOC','R');
+create table fine1(rollno int, DOI DATE, amt float);
+
+create or replace procedure book(r in number)
+as
+c number;
+BEGIN
+select  to_number(trunc(sysdate-doi)) into c from borrow1 where rollno=r ;
+if c>=15 AND c<=30 then
+c:=c-15;
+insert into fine values(r,sysdate,c*5);
+update borrow1 set status='R' where rollno=r;
+elsif c>30 then
+c:=c-30;
+insert into fine values(r,sysdate,c*50+75);
+update borrow1 set status='R' where rollno=r;
+end if;
+EXCEPTION
+when no_data_found then
+dbms_output.put_line('No such roll number found!');
+END;
+/
+
+set serveroutput on;
+execute book(2);
+select * from fine;
+
+                                          Practicle 5
+Q) Named PL/SQL Block: PL/SQL Stored Procedure and Stored Function.
+Write a Stored Procedure namely proc_Grade for the categorization of student.
+If marks scored by students in examination is <=1500 and marks>=990 then
+student will be placed in distinction category if marks scored are between 989 and900 category is first class,
+if marks899and 825 category is Higher Second Class.
+Write a PL/SQLblock to use procedure created with above requirement. Stud_Marks(name,total_marks) Result(Roll,Name, Class)
+
+Query:    
+
+create table studmarks(rollno int,name varchar2(100), totalmarks int);
+create table result(rollno int, name varchar2(100),class varchar2(100));
+insert into  result values(1,'Assim',' ');
+insert into  result values(2,'Rahul',' ');
+insert into studmarks values(1,'Anuj',1000);
+insert into studmarks values(2,'Pritesh',800);
+
+procedure:
+create or replace procedure grade(r in number)
+as
+t studmarks.totalmarks%type;
+begin
+select totalmarks into t from studmarks where rollno=r;
+if (t>=990) then
+dbms_output.put_line('Distinction');
+update result set class='Distinction' where rollno=r;
+elsif(t>=500 and t<990) then
+dbms_output.put_line('Frist Class');
+update result set class='Frist Class' where rollno=r;
+elsif(t<500) then
+dbms_output.put_line('Fail');
+update result set class='Fail' where rollno=r;
+end if;
+dbms_output.put_line('End of program');
+end;
+
+Call:
+begin
+grade(1);
+end;
+/
+
+output:
+Distinction
+End of program
+
+Statement processed.
+begin
+grade(2);
+end;
+/
+output:
+Frist Class
+End of program
+
+
+                            practicle no 6
+Q)Cursors:
+(All types: Implicit, Explicit, Cursor FOR Loop, Parameterized Cursor)
+Write a PL/SQL block of code using parameterized Cursor that will merge the data available in the newly
+created table N_Roll Call with the data available in the table O_RollCall. 
+If the data in the first table already exist in the second table then that data should be skipped.
+Note: Instructor will frame the problem statement for writing PL/SQL block using all types of Cursors in line with above statement.                                                               
+
+
+Query:
+create table O_RollCall(rollno int, name varchar(100));
+insert into O_rollcall values(1,'Anuj');
+insert into O_rollcall values(5,'Rahul');
+
+create table n_rollcall(rollno int, name varchar(100));
+insert into n_rollcall values(1,'Assim');
+insert into n_rollcall values(2,'Rahul');
+insert into n_rollcall values(3,'ANUJ');
+
+Cursor Program:
+DECLARE
+rn o_rollcall.rollno%Type;
+nm o_rollcall.name%Type;
+cursor c_rollno is select * from o_rollcall minus select * from n_rollcall;
+BEGIN
+open c_rollno;
+loop
+fetch c_rollno into rn,nm;
+exit when c_rollno %notfound;
+insert into n_rollcall values(rn,nm);
+end loop;
+close c_rollno;
+END;
+/
+
+old table:
+ROLLNO	NAME
+1	Anuj
+5	Rahul
+
+New Table:
+
+ROLLNO	NAME
+1	Assim
+2	Rahul
+3	Anuj
+
+After process:
+ROLLNO	NAME
+1	Assim
+2	Rahul
+3	Anuj
+5
+
+                         
+                        Practical NO: 7
+
+Q) Database Trigger (All Types: Row level and Statement level triggers, Before and After Triggers).
+Write a database trigger on Library table. The System should keep track of the records that are being updated or deleted.
+The old value of updated or deleted records should be added in Library_Audit table.
+Note: Instructor will Frame the problem statement for writing PL/SQLblock for all types of Triggers in line with above Statement.
+Query:
+create table lib(rollno int,name varchar(20),status varchar(20));
+insert into lib values(1,'Anuj','R');
+insert into lib values(2,'Assim','I');
+insert into lib values(3,'Rahul','I');
+insert into lib values(4,'Pritesh','R');
+create table liba(rollno int,name varchar(20),status varchar(20));
+trigger:
+create or replace trigger library
+before delete or update on lib
+REFERENCING old as o new as n
+for each row
+begin
+insert into liba values(:o.rollno, :o.name, :o.status);
+end;
+
+
+delete from lib where rollno=1; 
+delete from lib where rollno=2;
+update lib set rollno=1 where rollno=3;
+
+select*from lib;
+
+ROLLNO	NAME	STATUS
+1	Anuj	R
+2	Assim	I
+3	Rahul	I
+
+
+
+
+	
+
+
+
+ 
+
+
+
+
+
+
+
+
+                                                        Practical No:10
+
+Problem Statement: Design and Develop MongoDB Queries using aggregation and indexing with suitable example using MongoDB.
+
+> db.createCollection("Student");
+> db.Student.insert({"_id":1,"roll_no":3205,"Name":'Amol Modi',"dmsa marks":"90","array":["name","Amol Modi","dmsa marks"]});
+> db.Student.insert({"_id":2,"roll_no":3206,"Name":'Anjana Pradeep',"dmsa marks":"75","array":["name","Anjana Pradeep","dmsa marks"]});
+> db.Student.insert({"_id":3,"roll_no":3228,"Name":'Rohan Jain',"dmsa marks":"85","array":["name","Rohan Jain","dmsa marks"]});
+> db.Student.insert({"_id":4,"roll_no":3254,"Name":'Payal Rathod',"dmsa marks":"70","array":["name","Payal Rathod","dmsa marks"]});
+> db.Student.find().pretty();
+> db.Student.ensureIndex({"name":1});      
+> db.Student.ensureIndex({"array":1});
+> db.Student.ensureIndex({"_id":-1,"name":1});    
+> db.Student.ensureIndex({"roll_no":1},{unique:true});  
+> db.Student.find({"array":"name"}).pretty();   
+> db.Student.find({},{roll_no:1}).pretty();
+> db.Student.find({roll_no:{$gt:3206}}).pretty();
+
+
+
+  
+                                                                 Practical No:11
+
+
+MongoDB – Map-reduces operations: Implement Map reduces operation with suitable example using MongoDB.
+
+use demo
+db.orders.insert({cust_id:"A123",amount: 500, status:'A'})
+db.orders.insert({cust_id:"A123",amount: 250, status:'A'})
+db.orders.insert({cust_id:"A121",amount: 200, status:'A'})
+db.orders.insert({cust_id:"B234",amount: 200, status:'A'})
+db.orders.insert({cust_id:"B234",amount: 234, status:'B'})
+db.orders.insert({cust_id:"A121",amount: 400, status:'D'})
+db.orders.insert({cust_id:"A234",amount: 400, status:'A'})
+db.orders.insert({cust_id:"A234",amount: 400, status:'B'})
+db.orders.insert({cust_id:"A234",amount: 400, status:'B'})
+var mapFunction1 = function() { emit(this.cust_id, this.amount); };
+var reduceFunction1 = function(keyCustId, valuesamount) { return Array.sum(valuesamount); };
+>db.orders.mapReduce(
+mapFunction1,
+reduceFunction1,
+{ out: "map_reduce_example" }
+)
+> db.map_reduce_example.find()
+> db.orders.distinct("cust_id")
+
+
+connect system as sysdba; shutdown immediate; startup nomount; alter database mount; alter database open; connect system; root
